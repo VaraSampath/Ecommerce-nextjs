@@ -1,7 +1,8 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   username: z.string().email(),
@@ -25,6 +27,7 @@ const formSchema = z.object({
 
 export default function RegisterForm() {
   // ...
+  const { replace } = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,6 +40,7 @@ export default function RegisterForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+
     console.log(values);
     const f = await fetch("/api/register", {
       method: "POST",
@@ -47,53 +51,64 @@ export default function RegisterForm() {
     });
     const data = await f.json();
     console.log(data);
+
+    if (data.ok) {
+      toast.success("Your account has been successfully created.");
+      replace("/login");
+    }
+    if (data.code === 11000) {
+      toast.warn("This username already exits.");
+    }
   }
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8"
-      >
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <>
+    <>
+      <ToastContainer position="top-center" />
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8"
+        >
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <>
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Username"
+                      {...field}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              </>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Username</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Username"
+                    placeholder="Password"
                     {...field}
+                    type="password"
                   />
                 </FormControl>
 
                 <FormMessage />
               </FormItem>
-            </>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Password"
-                  {...field}
-                  type="password"
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+            )}
+          />
+          <Button type="submit">Submit</Button>
+        </form>
+      </Form>
+    </>
   );
 }
