@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 const connectToDb = () => {
   mongoose.connect(
-    "mongodb+srv://varasampath753:Vara123@cluster0.4ea9kgy.mongodb.net/",
+    `mongodb+srv://varasampath753:${process.env.DB_PASS}@cluster0.4ea9kgy.mongodb.net/`,
     {
       useNewUrlParser: true,
     }
