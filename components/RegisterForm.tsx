@@ -23,6 +23,10 @@ const formSchema = z.object({
   password: z
     .string()
     .min(5, { message: "Password must be at least of 5 characters" }),
+  fullname: z
+    .string()
+    .min(5, { message: "Name must be at least of 5 characters" })
+    .trim(),
 });
 
 export default function RegisterForm() {
@@ -33,6 +37,7 @@ export default function RegisterForm() {
     defaultValues: {
       username: "",
       password: "",
+      fullname: "",
     },
   });
 
@@ -99,6 +104,23 @@ export default function RegisterForm() {
                     placeholder="Password"
                     {...field}
                     type="password"
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="fullname"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Your Full Name"
+                    {...field}
                   />
                 </FormControl>
 

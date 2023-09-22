@@ -7,11 +7,15 @@ connectToDb();
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { username, password } = body;
+    const { username, password, fullname } = body;
     let hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
 
-    const user = new User({ username, password: hashedPassword });
+    const user = new User({
+      username,
+      password: hashedPassword,
+      userDetails: { fullname },
+    });
     await user.save();
 
     return NextResponse.json({ user, ok: true });

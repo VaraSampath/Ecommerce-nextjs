@@ -10,6 +10,10 @@ const UserSchema =
     password: {
       type: String,
     },
+    userDetails: {
+      type: Map,
+      of: String,
+    },
     cartDetails: {
       type: [],
       default: [],
